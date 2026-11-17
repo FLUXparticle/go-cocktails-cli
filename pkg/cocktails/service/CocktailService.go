@@ -5,6 +5,7 @@ import (
 	"go-cocktails-cli/pkg/cocktails/repository"
 	"golang.org/x/sync/errgroup"
 	"sort"
+	"strings"
 )
 
 type CocktailService struct {
@@ -16,8 +17,27 @@ func NewCocktailService(repo repository.CocktailRepository) *CocktailService {
 }
 
 func (s *CocktailService) MilkAmount() (int, error) {
-	// TODO Aufgabe 1: Berechne die Milchmenge der passenden Cocktails.
-	panic("Aufgabe 1")
+	cocktails, err := s.GetCocktails()
+	if err != nil {
+		return 0, err
+	}
+
+	total := 0
+	for _, cocktail := range cocktails {
+		if !strings.Contains(cocktail.Name, "Milk") {
+			continue
+		}
+		recipe, err := s.GetCocktail(cocktail.CocktailID)
+		if err != nil {
+			return 0, err
+		}
+		for _, instruction := range recipe.Instructions {
+			if instruction.Ingredient != nil && instruction.Ingredient.Name == "Milch" {
+				total += instruction.AmountCL
+			}
+		}
+	}
+	return total, nil
 }
 
 func (s *CocktailService) MilkAmountParallel() (int, error) {

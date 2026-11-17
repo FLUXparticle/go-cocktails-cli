@@ -1,12 +1,22 @@
 package service
 
 import (
+	"go-cocktails-cli/pkg/cocktails/repository/remote"
 	"testing"
 )
 
 func TestMilkAmount(t *testing.T) {
-	// TODO Aufgabe 1: Prüfe die Milchmenge gegen den Kursserver.
-	t.Skip("Aufgabe 1")
+	repo := remote.NewRemoteRepository()
+	svc := NewCocktailService(repo)
+
+	got, err := svc.MilkAmount()
+	if err != nil {
+		t.Fatal(err)
+	}
+	const want = 38
+	if got != want {
+		t.Errorf("Milchmenge: %d cl, erwartet: %d cl", got, want)
+	}
 }
 
 func TestMilkAmountParallel(t *testing.T) {

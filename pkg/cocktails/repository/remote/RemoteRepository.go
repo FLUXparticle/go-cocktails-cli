@@ -1,7 +1,9 @@
 package remote
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"go-cocktails-cli/pkg/cocktails/model"
@@ -41,18 +43,37 @@ func NewRemoteRepositoryWithURL(ctx context.Context, client *http.Client, baseUR
 }
 
 func (r *RemoteRepository) request(method string, path string, body []byte, result any) error {
-	// TODO Aufgabe 1: Führe den HTTP-Request aus und dekodiere die Antwort.
-	panic("Aufgabe 1")
+	req, err := http.NewRequestWithContext(r.ctx, method, r.baseURL+path, bytes.NewReader(body))
+	if err != nil {
+		return err
+	}
+	if body != nil {
+		req.Header.Set("Content-Type", "application/json")
+	}
+	resp, err := r.client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		return fmt.Errorf("%s %s: %s", method, path, resp.Status)
+	}
+	if result == nil {
+		return nil
+	}
+	return json.NewDecoder(resp.Body).Decode(result)
 }
 
 func (r *RemoteRepository) GetCocktails() ([]*model.Cocktail, error) {
-	// TODO Aufgabe 1: Lade die Cocktail-Liste vom Kursserver.
-	panic("Aufgabe 1")
+	var rows []*model.Cocktail
+	err := r.request(http.MethodGet, "/api/cocktails", nil, &rows)
+	return rows, err
 }
 
 func (r *RemoteRepository) GetCocktail(id uint) (*model.Cocktail, error) {
-	// TODO Aufgabe 1: Lade das Rezept für eine Cocktail-ID.
-	panic("Aufgabe 1")
+	var row model.Cocktail
+	err := r.request(http.MethodGet, fmt.Sprintf("/api/cocktails/%d", id), nil, &row)
+	return &row, err
 }
 
 func (r *RemoteRepository) GetIngredients() ([]*model.Ingredient, error) {
