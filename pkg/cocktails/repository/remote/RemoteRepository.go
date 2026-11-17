@@ -77,13 +77,18 @@ func (r *RemoteRepository) GetCocktail(id uint) (*model.Cocktail, error) {
 }
 
 func (r *RemoteRepository) GetIngredients() ([]*model.Ingredient, error) {
-	// TODO Aufgabe 4: Lade die Zutatenliste vom Kursserver.
-	panic("Aufgabe 4")
+	var rows []*model.Ingredient
+	err := r.request(http.MethodGet, "/api/ingredients", nil, &rows)
+	return rows, err
 }
 
 func (r *RemoteRepository) GetCocktailsByIngredient(id uint) (string, []*model.Cocktail, error) {
-	// TODO Aufgabe 4: Lade die Cocktails zu einer Zutaten-ID.
-	panic("Aufgabe 4")
+	var result struct {
+		Name      string            `json:"name"`
+		Cocktails []*model.Cocktail `json:"cocktails"`
+	}
+	err := r.request(http.MethodGet, fmt.Sprintf("/api/ingredients/%d", id), nil, &result)
+	return result.Name, result.Cocktails, err
 }
 
 // FindCocktailsByName is unsupported by the remote repository.

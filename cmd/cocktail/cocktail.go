@@ -1,19 +1,46 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
+
+	"go-cocktails-cli/cmd/internal/console"
+	"go-cocktails-cli/pkg/cocktails/repository/remote"
+	"go-cocktails-cli/pkg/cocktails/service"
 )
 
 func main() {
-	// TODO Aufgabe 4: Lies die Cocktail-ID mit -id oder -i ein.
-	if err := run(0); err != nil {
+	var id uint
+	flag.UintVar(&id, "id", 0, "ID des Cocktails")
+	flag.UintVar(&id, "i", 0, "Kurzform von -id")
+	flag.Parse()
+	if flag.NArg() != 0 {
+		fmt.Fprintln(os.Stderr, "cocktail erwartet keine Positionsargumente")
+		os.Exit(1)
+	}
+	if err := run(id); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 }
 
 func run(id uint) error {
-	// TODO Aufgabe 4: Zeige Cocktails vom Kursserver an.
-	panic("Aufgabe 4")
+	repo := remote.NewRemoteRepository()
+
+	svc := service.NewCocktailService(repo)
+	if id != 0 {
+		cocktail, err := svc.GetCocktail(id)
+		if err != nil {
+			return err
+		}
+		console.PrintRecipe(cocktail)
+		return nil
+	}
+	cocktails, err := svc.GetCocktails()
+	if err != nil {
+		return err
+	}
+	console.PrintCocktails(cocktails)
+	return nil
 }
