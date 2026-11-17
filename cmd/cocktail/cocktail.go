@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"go-cocktails-cli/cmd/internal/console"
-	"go-cocktails-cli/pkg/cocktails/repository/remote"
+	"go-cocktails-cli/pkg/cocktails/repository/database"
 	"go-cocktails-cli/pkg/cocktails/service"
 )
 
@@ -26,7 +26,11 @@ func main() {
 }
 
 func run(id uint) error {
-	repo := remote.NewRemoteRepository()
+	repo, err := database.NewDatabaseRepository()
+	if err != nil {
+		return err
+	}
+	defer repo.Close()
 
 	svc := service.NewCocktailService(repo)
 	if id != 0 {
