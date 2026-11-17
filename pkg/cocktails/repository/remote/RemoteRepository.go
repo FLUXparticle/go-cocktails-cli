@@ -6,10 +6,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"go-cocktails-cli/pkg/cocktails/model"
 	"net/http"
+	"net/url"
 	"strings"
 	"time"
+
+	"go-cocktails-cli/pkg/cocktails/model"
 )
 
 const (
@@ -102,16 +104,26 @@ func (r *RemoteRepository) FindIngredientsByName(query string) ([]*model.Ingredi
 }
 
 func (r *RemoteRepository) Ingredients() (map[uint]bool, error) {
-	// TODO Aufgabe 5: Lies die vorhandenen Zutaten.
-	panic("Aufgabe 5")
+	rows, err := r.getFridge()
+	if err != nil {
+		return nil, err
+	}
+	stock := make(map[uint]bool)
+	for _, row := range rows {
+		if row.InFridge {
+			stock[row.IngredientID] = true
+		}
+	}
+	return stock, nil
 }
 
 func (r *RemoteRepository) getFridge() ([]*model.FridgeIngredient, error) {
-	// TODO Aufgabe 5: Lade den Kühlschrankbestand.
-	panic("Aufgabe 5")
+	var rows []*model.FridgeIngredient
+	err := r.request(http.MethodGet, "/api/user/"+url.PathEscape(fridgeUser)+"/fridge", nil, &rows)
+	return rows, err
 }
 
 func (r *RemoteRepository) SetFridgeIngredient(id uint, inFridge bool) error {
-	// TODO Aufgabe 5: Ändere den Bestand beim Kursserver.
-	panic("Aufgabe 5")
+	path := fmt.Sprintf("/api/user/%s/fridge/%d", url.PathEscape(fridgeUser), id)
+	return r.request(http.MethodPatch, path, []byte(fmt.Sprintf(`{"inFridge":%t}`, inFridge)), nil)
 }
