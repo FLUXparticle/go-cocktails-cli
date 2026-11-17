@@ -1,0 +1,20 @@
+@baseUrl = http://localhost:8080
+@user = default-user
+
+### Bestand ansehen
+GET {{baseUrl}}/api/user/{{user}}/fridge
+
+### Buttermilch (31) hinzufügen
+PATCH {{baseUrl}}/api/user/{{user}}/fridge/31
+Content-Type: application/json
+
+{"inFridge": true}
+
+### Fruchtsirup Preiselbeere (8) hinzufügen
+PATCH {{baseUrl}}/api/user/{{user}}/fridge/8
+Content-Type: application/json
+
+{"inFridge": true}
+
+### Mögliche Cocktails ansehen – Pink Power (27) sollte dabei sein
+GET {{baseUrl}}/api/user/{{user}}/possible

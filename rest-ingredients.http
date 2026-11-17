@@ -1,0 +1,16 @@
+@baseUrl = http://localhost:8080
+
+### Zutatenliste
+GET {{baseUrl}}/api/ingredients
+
+### Barsirup Mandel und passende Cocktails
+GET {{baseUrl}}/api/ingredients/1
+
+### Ungültige Zutaten-ID – erwartet 400
+GET {{baseUrl}}/api/ingredients/abc
+
+### Unbekannte Zutaten-ID – erwartet 404
+GET {{baseUrl}}/api/ingredients/999999
+
+### Falsche HTTP-Methode – erwartet 405
+PUT {{baseUrl}}/api/ingredients/1

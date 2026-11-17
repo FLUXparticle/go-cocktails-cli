@@ -1,0 +1,19 @@
+@baseUrl = http://localhost:8080
+
+### Cocktail-Liste
+GET {{baseUrl}}/api/cocktails
+
+### Rezept für Milkshake
+GET {{baseUrl}}/api/cocktails/24
+
+### Cocktails mit Milk im Namen suchen
+GET {{baseUrl}}/api/search?query=Milk
+
+### Ungültige Cocktail-ID – erwartet 400
+GET {{baseUrl}}/api/cocktails/abc
+
+### Unbekannte Cocktail-ID – erwartet 404
+GET {{baseUrl}}/api/cocktails/999999
+
+### Falsche HTTP-Methode – erwartet 405
+POST {{baseUrl}}/api/cocktails
