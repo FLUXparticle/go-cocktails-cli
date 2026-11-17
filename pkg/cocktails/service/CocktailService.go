@@ -1,11 +1,13 @@
 package service
 
 import (
+	"fmt"
 	"go-cocktails-cli/pkg/cocktails/model"
 	"go-cocktails-cli/pkg/cocktails/repository"
 	"golang.org/x/sync/errgroup"
 	"sort"
 	"strings"
+	"sync"
 )
 
 type CocktailService struct {
@@ -41,8 +43,51 @@ func (s *CocktailService) MilkAmount() (int, error) {
 }
 
 func (s *CocktailService) MilkAmountParallel() (int, error) {
-	// TODO Aufgabe 2: Berechne die Milchmenge mit parallelen Rezeptabrufen.
-	panic("Aufgabe 2")
+	cocktails, err := s.GetCocktails()
+	if err != nil {
+		return 0, err
+	}
+
+	amounts := make(chan int)
+	var wg sync.WaitGroup
+	for _, cocktail := range cocktails {
+		if !strings.Contains(cocktail.Name, "Milk") {
+			continue
+		}
+		wg.Go(func() {
+			recipe, err := s.GetCocktail(cocktail.CocktailID)
+			if err != nil {
+				amounts <- -1
+				return
+			}
+			amount := 0
+			for _, instruction := range recipe.Instructions {
+				if instruction.Ingredient != nil && instruction.Ingredient.Name == "Milch" {
+					amount += instruction.AmountCL
+				}
+			}
+			amounts <- amount
+		})
+	}
+
+	go func() {
+		wg.Wait()
+		close(amounts)
+	}()
+
+	total := 0
+	hadError := false
+	for amount := range amounts {
+		if amount < 0 {
+			hadError = true
+			continue
+		}
+		total += amount
+	}
+	if hadError {
+		return 0, fmt.Errorf("mindestens ein Rezept konnte nicht geladen werden")
+	}
+	return total, nil
 }
 
 func (s *CocktailService) MilkAmountErrGroup(group *errgroup.Group) (int, error) {

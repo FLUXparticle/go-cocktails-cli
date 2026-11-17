@@ -20,8 +20,17 @@ func TestMilkAmount(t *testing.T) {
 }
 
 func TestMilkAmountParallel(t *testing.T) {
-	// TODO Aufgabe 2: Prüfe die parallel ermittelte Milchmenge.
-	t.Skip("Aufgabe 2")
+	repo := remote.NewRemoteRepository()
+	svc := NewCocktailService(repo)
+
+	got, err := svc.MilkAmountParallel()
+	if err != nil {
+		t.Fatal(err)
+	}
+	const want = 38
+	if got != want {
+		t.Errorf("Milchmenge: %d cl, erwartet: %d cl", got, want)
+	}
 }
 
 func TestMilkAmountErrGroupCancelsRequests(t *testing.T) {
