@@ -20,6 +20,7 @@ func main() {
 	}
 }
 
+// run öffnet den SQLite-Katalog und startet den HTTP-Server auf Port 8080.
 func run() error {
 	repo, err := database.NewDatabaseRepository()
 	if err != nil {
@@ -36,6 +37,7 @@ func run() error {
 	return http.Serve(listener, router)
 }
 
+// newRouter verdrahtet Katalog-, Kühlschrank- und Webrouten. repo liefert die Katalogdaten aus SQLite.
 func newRouter(repo *database.DatabaseRepository) *http.ServeMux {
 	router := http.NewServeMux()
 	serv := service.NewCocktailService(repo)

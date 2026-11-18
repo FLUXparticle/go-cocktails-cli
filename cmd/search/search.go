@@ -26,6 +26,7 @@ func main() {
 	}
 }
 
+// run zeigt Cocktails an, deren Name oder Zutatenname den Suchbegriff query enthält.
 func run(query string) error {
 	repo, err := database.NewDatabaseRepository()
 	if err != nil {

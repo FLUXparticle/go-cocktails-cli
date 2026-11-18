@@ -13,6 +13,7 @@ func main() {
 	}
 }
 
+// run zeigt die Cocktail-Liste oder ein Rezept an. Eine id von 0 wählt die Liste.
 func run(id uint) error {
 	// TODO Aufgabe 4: Zeige Cocktails vom Kursserver an.
 	panic("Aufgabe 4")

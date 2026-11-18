@@ -5,6 +5,7 @@ import (
 	"testing"
 )
 
+// TestFridgeConcurrentAccess prüft zwei gleichzeitige Schreibzugriffe auf denselben Kühlschrank.
 func TestFridgeConcurrentAccess(t *testing.T) {
 	fridge := NewFridgeRepository()
 	const ingredientID = 31
